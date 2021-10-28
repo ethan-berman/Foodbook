@@ -1,0 +1,21 @@
+{% extends "base.html"%}
+
+{% block main_content %}
+
+<form method="post" action={{url_for("ingredient_create")}}>
+    <p> <label> Name: <input type="text" value="" name="name"></label></p>
+    <p> <label> Cost: <input type="number" value="" name="cost"></label></p>
+    
+    <input type="submit" value="Submit">
+</form>
+<div class="container">
+    <ul>
+        {% for ingredient in ingredients %}
+            <div>
+                <a href={{url_for("ingredient_detail",iid=ingredient.iid)}}>{{ingredient.name}}</a>
+            </div>
+        {% endfor %}
+    </ul>   
+</div>
+
+{% endblock%}
