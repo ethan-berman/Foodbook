@@ -19,7 +19,20 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 @app.route('/')
 def index():
     conn = dbi.connect()
-    return render_template('main.html')
+    recipes = queries.getRecipes(conn,10)
+    return render_template('main.html', recipes=recipes)
+
+@app.route('/recipe/<rid>')
+def recipe_detail(rid):
+    conn = dbi.connect()
+    recipe = queries.getRecipeById(conn, rid)
+    ingredients = queries.getRecipeIngredients(conn, rid)
+    for item in ingredients:
+        print(item)
+        ingredient_name = queries.getIngredientDetail(conn, item.get('ingredient'))
+        print(ingredient_name)
+        item['ingredient_name'] = ingredient_name.get("name")
+    return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients)
 
 @app.route('/ingredient/')
 def ingredient():

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block main_content%}
+
+<div class="container">
+    <h1>{{recipe.name}}</h1>
+    <p>{{recipe.description}}</p>
+    <!-- <p>
+        {{ingredients}}
+    </p> -->
+    <table>
+        <thead>
+            <th>Ingredient</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+        </thead>
+        <tbody>
+            {% for item in ingredients %}
+            <tr>
+                    <td> <a href={{url_for("ingredient_detail",iid=item.ingredient)}}>  {{item.ingredient_name}} </a> </td> 
+                    <td> {{item.quantity}} </td>
+                    <td> {{item.unit}} </td>
+                    
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

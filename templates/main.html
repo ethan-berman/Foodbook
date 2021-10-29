@@ -2,6 +2,16 @@
 
 {% block main_content %}
 
-<p>test </p> 
+<h1>Foodbook</h1>
+<ul>
+{% for recipe in recipes %}
+
+<li>
+    <a href={{url_for("recipe_detail",rid=recipe.rid)}}>{{recipe.name}}</a>
+</li>
+
+
+{% endfor%}
+</ul>
 
 {% endblock %}
