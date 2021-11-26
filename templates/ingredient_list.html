@@ -1,14 +1,14 @@
 {% extends "base.html"%}
 
 {% block main_content %}
-
+<div class="container">
 <form method="post" action={{url_for("ingredient_create")}}>
     <p> <label> Name: <input type="text" value="" name="name"></label></p>
     <p> <label> Cost: <input type="number" value="" name="cost"></label></p>
     
     <input type="submit" value="Submit">
 </form>
-<div class="container">
+
     <ul>
         {% for ingredient in ingredients %}
             <div>

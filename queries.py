@@ -12,14 +12,26 @@ def getIngredients(conn, limit):
     ingredients = curs.fetchall()
     return ingredients
 
-def insertIngredient(conn, name, cost):
+def getAllIngredients(conn):
     curs = dbi.dict_cursor(conn)
+    curs.execute("select iid, name from ingredient")
+    ingredients = curs.fetchall()
+    return ingredients
+
+def insertIngredient(conn, name, cost):
+    curs = dbi.cursor(conn)
     curs.execute("insert into ingredient(name,cost) values (%s, %s);", [name,cost])
     conn.commit()
     curs.execute("select last_insert_id() as id from ingredient")
     id = curs.fetchone()
     id = id['id']
     return id
+def searchIngredient(conn, name):
+    curs = dbi.dict_cursor(conn)
+    param = "%" + name + "%"
+    curs.execute("select * from ingredient where name like %s ", [param])
+    results = curs.fetchall()
+    return results
 
 def getRecipes(conn, limit):
     curs = dbi.dict_cursor(conn)
@@ -36,6 +48,15 @@ def getRecipeById(conn, rid):
 def getRecipeIngredients(conn, rid):
     curs = dbi.dict_cursor(conn)
     print(rid)
-    curs.execute("select * from quantity inner join recipe on quantity.recipe = recipe.rid")
+    curs.execute("select * from quantity inner join recipe on quantity.recipe = (%s)", [rid])
     quantities = curs.fetchall()
     return quantities
+
+def insertRecipe(conn, author, name, description):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("insert into `recipe`(author, name, description) values (%s, %s, %s)", [author, name, description])
+    conn.commit()
+    curs.execute("select last_insert_id() as id from ingredient")
+    id = curs.fetchone()
+    id = id['id']
+    return id

@@ -1,5 +1,5 @@
 from flask import (Flask, render_template, make_response, url_for, request,
-                   redirect, flash, session, send_from_directory, jsonify)
+                   redirect, flash, session, send_from_directory, jsonify, Response)
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
@@ -34,6 +34,22 @@ def recipe_detail(rid):
         item['ingredient_name'] = ingredient_name.get("name")
     return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients)
 
+@app.route('/recipe/', methods=["GET", "POST"])
+def recipe_create():
+    conn = dbi.connect()
+    if request.method == "GET":
+        ingredients = queries.getAllIngredients(conn)
+        return render_template("recipe_create.html", ingredients=ingredients)
+    else:
+        data = request.form
+        title = data['title']
+        description = data['description']
+        print(data)
+        print(request.form['ingredient'])
+        recipe_id = queries.insertRecipe(conn, "1", title, description)
+        return redirect(url_for("recipe_detail", rid=recipe_id))
+
+
 @app.route('/ingredient/')
 def ingredient():
     conn = dbi.connect()
@@ -58,6 +74,15 @@ def ingredient_detail(iid):
     ingredient = queries.getIngredientDetail(conn, iid)
     print(ingredient)
     return render_template('ingredient_detail.html', ingredient=ingredient)
+
+@app.route('/lookup/')
+def ingredient_search():
+    conn = dbi.connect()
+    name = request.args.get('name')
+    print(name)
+    results = queries.searchIngredient(conn, name)
+    print(results)
+    return jsonify(results=results)
 
 
 @app.before_first_request

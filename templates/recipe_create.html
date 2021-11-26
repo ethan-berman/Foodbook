@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="title">Name:</label>
+                    <input id="title" class="form-control" type="text" name="title">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" class=" form-control"
+                        name="description">Describe your recipe here!</textarea>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <h4 class="text-center">Ingredients</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchText">Search:</label>
+                            <input class="form-control" id="searchText" name="search" type="text">
+                        </div>
+                        <div class="form-group">
+                            <ul id="options">
+
+                            </ul>
+                        </div>
+                        <table id="ingredients"></table>
+
+                        <div class="form-group">
+                            <input class="form-control" id="submit" type="submit" value="Submit">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block end_scripts %}
+<script>
+    var counter = 0;
+    var ingredients = {};
+    function handleAdd(item, name) {
+        console.log(item);
+        console.log(name);
+        var newIngredient = $(document.createElement("tr"))
+            .attr("id", "ing" + item);
+        var labelContainer = $(document.createElement("td"));
+        var label = $(document.createElement("td"))
+            .attr("value", item)
+            .attr("class", "label");
+        label.after().html(name);
+        labelContainer.append(label);
+        var quantityContainer = $(document.createElement("td"));
+        var quantity = $(document.createElement("input"))
+            .attr("class", "q")
+            .attr("type", "number");
+        quantityContainer.append(quantity);
+        var removeButtonContainer = $(document.createElement("td"));
+        var removeButton = $(document.createElement("input"))
+            .attr("type", "button")
+            .attr("value", "-")
+            .attr("onclick", "handleRemove(" + item + ")");
+        removeButtonContainer.append(removeButton);
+        newIngredient.append(labelContainer);
+        newIngredient.append(quantityContainer);
+        newIngredient.append(removeButtonContainer);
+        newIngredient.appendTo("#ingredients");
+        ingredients[item] = {name: name, quantity: 0};
+        counter++;
+        console.log(ingredients);
+
+    };
+    function handleRemove(item){
+        console.log(item);
+        $("#ing"+item).remove();
+        delete ingredients[item];
+        counter--;
+        console.log(ingredients);
+    }
+    $("#addButton").click(function (e) {
+        e.preventDefault();
+        var newTextBoxDiv = $(document.createElement('div'))
+            .attr("id", 'TextBoxDiv' + counter);
+
+        newTextBoxDiv.after().html('<tr> <td> <label>Textbox #' + counter + ' : </label> </td>' +
+            '<td> <select name="ingredient[' + counter + ']"> '
+            + '{% for ingredient in ingredients %} <option value={{ingredient.iid}}> {{ingredient.name}} </option> {% endfor%} </select> <td>' +
+            '<td> Quantity: </td> ' +
+            '<td> <input type="number"> </td>' +
+            '</tr>');
+
+        newTextBoxDiv.appendTo("#ingredients");
+
+
+        counter++;
+    });
+    $("#searchText").on('input', $.debounce(1000, function (e) {
+        e.preventDefault();
+        let name = $("#searchText").val();
+        console.log(name);
+        let search_url = "{{url_for('ingredient_search')}}";
+        $.get(search_url, { name: name }).done(function (data) {
+            console.log(data.results);
+            var results = data.results;
+            $("ul > li").each(function(index, elem){
+                $(elem).remove();
+            });
+            for (let index in results) {
+                console.log(results[index]);
+                var listItem = $(document.createElement("li"))
+                    .attr("id", "IngredientChoice" + index)
+                    .attr("class", "row");
+                listItem.after().html("" + results[index].name);
+                let cmd = "handleAdd(" + results[index].iid + ", '" + results[index].name +"' )";
+                var x = $(document.createElement("input"))
+                    .attr("type", "button")
+                    .attr("onclick", cmd)
+                    .attr("value", "+");
+                listItem.append(x);
+                $("#options").append(listItem);
+
+            }
+        });
+    }));
+    $("#submit").click(function(e){
+        e.preventDefault();
+        var ingredientList = [];
+        $("#ingredients > tr").each(function(index, elem){
+            let id = $(elem).find(".label").attr("value");
+            let quantity = $(elem).find(".q").val();
+            let item = { iid: id, quantity: quantity};
+            ingredientList.push(item);
+        });
+        console.log(ingredientList);
+    })
+</script>
+{% endblock %}
