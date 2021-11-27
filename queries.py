@@ -19,10 +19,19 @@ def getAllIngredients(conn):
     return ingredients
 
 def insertIngredient(conn, name, cost):
-    curs = dbi.cursor(conn)
+    curs = dbi.dict_cursor(conn)
     curs.execute("insert into ingredient(name,cost) values (%s, %s);", [name,cost])
     conn.commit()
     curs.execute("select last_insert_id() as id from ingredient")
+    id = curs.fetchone()
+    id = id['id']
+    return id
+
+def insertQuantity(conn, recipe, ingredient, quantity, unit):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("insert into quantity(ingredient, recipe, quantity, unit) values (%s, %s, %s, %s);", [ingredient,recipe,quantity,unit])
+    conn.commit()
+    curs.execute("select last_insert_id() as id from quantity")
     id = curs.fetchone()
     id = id['id']
     return id

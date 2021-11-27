@@ -28,9 +28,9 @@ def recipe_detail(rid):
     recipe = queries.getRecipeById(conn, rid)
     ingredients = queries.getRecipeIngredients(conn, rid)
     for item in ingredients:
-        print(item)
+        # print(item)
         ingredient_name = queries.getIngredientDetail(conn, item.get('ingredient'))
-        print(ingredient_name)
+        # print(ingredient_name)
         item['ingredient_name'] = ingredient_name.get("name")
     return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients)
 
@@ -41,13 +41,22 @@ def recipe_create():
         ingredients = queries.getAllIngredients(conn)
         return render_template("recipe_create.html", ingredients=ingredients)
     else:
-        data = request.form
-        title = data['title']
-        description = data['description']
+        print(request.json)
+        data = request.json
+        title = data.get('title')
+        description = data.get('description')
+        ingredients = data.get('ingredients')
         print(data)
+
         print(request.form)
-        print("hi")
+        print(ingredients)
+        
+
         recipe_id = queries.insertRecipe(conn, "1", title, description)
+        for item in ingredients:
+            print(item)
+            id = queries.insertQuantity(conn, recipe_id, item['iid'], item['quantity'], item['unit'])
+            print(id)
         return redirect(url_for("recipe_detail", rid=recipe_id))
 
 

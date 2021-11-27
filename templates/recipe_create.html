@@ -49,6 +49,7 @@
 <script>
     var counter = 0;
     var ingredients = {};
+    let choices = ["cup", "pound", "count", "tbsp", "tsp", "kilogram", "gram", "slices"];
     function handleAdd(item, name) {
         console.log(item);
         console.log(name);
@@ -60,19 +61,34 @@
             .attr("class", "label");
         label.after().html(name);
         labelContainer.append(label);
-        var quantityContainer = $(document.createElement("td"));
+        var quantityContainer = $(document.createElement("td"))
+            .attr("class", "form-group");
         var quantity = $(document.createElement("input"))
-            .attr("class", "q")
+            .attr("class", "q form-control")
             .attr("type", "number");
         quantityContainer.append(quantity);
+        var unitContainer = $(document.createElement("td"))
+            .attr("class", "form-group");
+        var unit = $(document.createElement("select"))
+            .attr("class", "u form-control")
+        for (let choice of choices){
+            let c = $(document.createElement("option"))
+                .attr("value", choice)
+                .attr("label", choice);
+            unit.append(c);
+        }
+        unitContainer.append(unit);
+        
         var removeButtonContainer = $(document.createElement("td"));
         var removeButton = $(document.createElement("input"))
             .attr("type", "button")
             .attr("value", "-")
+            .attr("class", "form-control")
             .attr("onclick", "handleRemove(" + item + ")");
         removeButtonContainer.append(removeButton);
         newIngredient.append(labelContainer);
         newIngredient.append(quantityContainer);
+        newIngredient.append(unitContainer);
         newIngredient.append(removeButtonContainer);
         newIngredient.appendTo("#ingredients");
         ingredients[item] = {name: name, quantity: 0};
@@ -119,14 +135,15 @@
                 console.log(results[index]);
                 var listItem = $(document.createElement("li"))
                     .attr("id", "IngredientChoice" + index)
-                    .attr("class", "row");
+                    .attr("class", "list-unstyled");
                 listItem.after().html("" + results[index].name);
                 let cmd = "handleAdd(" + results[index].iid + ", '" + results[index].name +"' )";
-                var x = $(document.createElement("input"))
+                var newButton = $(document.createElement("input"))
                     .attr("type", "button")
                     .attr("onclick", cmd)
+                    .attr("class", "form-control")
                     .attr("value", "+");
-                listItem.append(x);
+                listItem.append(newButton);
                 $("#options").append(listItem);
 
             }
@@ -140,20 +157,23 @@
         $("#ingredients > tr").each(function(index, elem){
             let id = $(elem).find(".label").attr("value");
             let quantity = $(elem).find(".q").val();
-            let item = { iid: id, quantity: quantity};
+            let unit = $(elem).find(".u").val();
+            let item = { iid: id, quantity: quantity, unit: unit};
             ingredientList.push(item);
         });
-        console.log(ingredientList);
-        console.log(name);
-        console.log(description);
-        console.log($("div").find("#title"));
         let data = {
             title: name,
             description: description,
             ingredients: ingredientList
         }
         let post_url = "{{url_for('recipe_create')}}";
-        $.post(post_url, data);
+        $.ajax({
+            url:post_url,
+            type:"POST",
+            data: JSON.stringify(data),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+          })
     })
 </script>
 {% endblock %}
