@@ -38,6 +38,11 @@ def getRecipes(conn, limit):
     curs.execute("select * from recipe limit %s", [limit])
     recipes = curs.fetchall()
     return recipes
+def getAllRecipes(conn):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from recipe")
+    recipes = curs.fetchall()
+    return recipes
 
 def getRecipeById(conn, rid):
     curs = dbi.dict_cursor(conn)

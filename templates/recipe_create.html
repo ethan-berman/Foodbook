@@ -135,6 +135,8 @@
     $("#submit").click(function(e){
         e.preventDefault();
         var ingredientList = [];
+        let name = $("div").find("#title").val();
+        let description = $("div").find("#description").val();
         $("#ingredients > tr").each(function(index, elem){
             let id = $(elem).find(".label").attr("value");
             let quantity = $(elem).find(".q").val();
@@ -142,6 +144,16 @@
             ingredientList.push(item);
         });
         console.log(ingredientList);
+        console.log(name);
+        console.log(description);
+        console.log($("div").find("#title"));
+        let data = {
+            title: name,
+            description: description,
+            ingredients: ingredientList
+        }
+        let post_url = "{{url_for('recipe_create')}}";
+        $.post(post_url, data);
     })
 </script>
 {% endblock %}
