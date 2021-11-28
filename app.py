@@ -27,12 +27,13 @@ def recipe_detail(rid):
     conn = dbi.connect()
     recipe = queries.getRecipeById(conn, rid)
     ingredients = queries.getRecipeIngredients(conn, rid)
+    instructions = queries.getInstructionsByRecipe(conn, rid)
     for item in ingredients:
         # print(item)
         ingredient_name = queries.getIngredientDetail(conn, item.get('ingredient'))
         # print(ingredient_name)
         item['ingredient_name'] = ingredient_name.get("name")
-    return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients)
+    return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients, instructions=instructions)
 
 @app.route('/recipe/', methods=["GET", "POST"])
 def recipe_create():
@@ -46,6 +47,7 @@ def recipe_create():
         title = data.get('title')
         description = data.get('description')
         ingredients = data.get('ingredients')
+        instructions = data.get("instructions")
         print(data)
 
         print(request.form)
@@ -57,6 +59,10 @@ def recipe_create():
             print(item)
             id = queries.insertQuantity(conn, recipe_id, item['iid'], item['quantity'], item['unit'])
             print(id)
+        for i in range(len(instructions)):
+            id = queries.insertInstruction(conn, recipe_id, i, instructions[i])
+            print(id)
+
         return redirect(url_for("recipe_detail", rid=recipe_id))
 
 

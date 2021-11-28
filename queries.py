@@ -62,7 +62,7 @@ def getRecipeById(conn, rid):
 def getRecipeIngredients(conn, rid):
     curs = dbi.dict_cursor(conn)
     print(rid)
-    curs.execute("select * from quantity inner join recipe on quantity.recipe = (%s)", [rid])
+    curs.execute("select * from quantity where recipe = %s", [rid])
     quantities = curs.fetchall()
     return quantities
 
@@ -74,3 +74,18 @@ def insertRecipe(conn, author, name, description):
     id = curs.fetchone()
     id = id['id']
     return id
+
+def insertInstruction(conn, recipe, number, content):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("insert into instruction(recipe, number, content) values (%s, %s, %s)", [recipe,number,content])
+    conn.commit()
+    curs.execute("select last_insert_id() as id from instruction")
+    id = curs.fetchone()
+    id = id['id']
+    return id
+
+def getInstructionsByRecipe(conn, recipe):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from instruction where recipe = %s", [recipe])
+    instructions = curs.fetchall()
+    return instructions

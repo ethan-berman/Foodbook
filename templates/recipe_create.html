@@ -30,7 +30,7 @@
                             </ul>
                         </div>
                         <div class="form-group">
-                            <table id="ingredients">
+                            <table id="ingredients" class="table">
                                 <thead>
                                     <th>Ingredient: </th>
                                     <th>Quantity: </th>
@@ -97,7 +97,8 @@
         var itemLabel = $(document.createElement("span"))
             .attr("class", "col-6")
             .text(obj.name);
-        let cmd = "handleAdd(" + obj.iid + ", '" + obj.name + "' )";
+        console.log(obj);
+        let cmd = "handleAdd(" + obj.iid + ", '" + obj.name + "', '" + obj.unit + "' )";
         var newButton = $(document.createElement("input"))
             .attr("type", "button")
             .attr("onclick", cmd)
@@ -108,13 +109,13 @@
         return listItem;
     };
 
-    function createIngredientListItem(index, name) {
+    function createIngredientListItem(index, name, unitDefault) {
         var newIngredient = $(document.createElement("tr"))
             .attr("id", "ing" + index);
         var labelContainer = $(document.createElement("td"));
         var label = $(document.createElement("td"))
             .attr("value", index)
-            .attr("class", "label");
+            .attr("class", "label col");
         label.text(name);
         labelContainer.append(label);
         var quantityContainer = $(document.createElement("td"))
@@ -126,12 +127,17 @@
         var unitContainer = $(document.createElement("td"))
             .attr("class", "form-group");
         var unit = $(document.createElement("select"))
-            .attr("class", "u form-control")
+            .attr("class", "u form-control");
+        console.log(unitDefault);
         for (let choice of choices) {
+            let selected = choice === unitDefault;
+            console.log(selected);
             let c = $(document.createElement("option"))
                 .attr("value", choice)
-                .attr("label", choice);
+                .attr("label", choice)
+                .attr("selected", selected);
             unit.append(c);
+            
         }
         unitContainer.append(unit);
         var removeButtonContainer = $(document.createElement("td"));
@@ -160,9 +166,10 @@
         instructionCounter--;
     };
 
-    function handleAdd(item, name) {
+    function handleAdd(item, name, unit) {
         console.log(item);
         console.log(name);
+        console.log(unit);
         $("#ingredients").show();
         if (ingredients[item]) {
             console.log("repeat");
@@ -170,7 +177,7 @@
             return;
         }
         ingredients[item] = { name: name, quantity: 0 };
-        var newIngredient = createIngredientListItem(item, name);
+        var newIngredient = createIngredientListItem(item, name, unit);
         $("#ingredients").append(newIngredient);
         counter++;
 
