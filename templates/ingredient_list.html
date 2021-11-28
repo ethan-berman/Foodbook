@@ -1,21 +1,22 @@
 {% extends "base.html"%}
 
 {% block main_content %}
-<div class="container">
-<form method="post" action={{url_for("ingredient_create")}}>
-    <p> <label> Name: <input type="text" value="" name="name"></label></p>
-    <p> <label> Cost: <input type="number" value="" name="cost"></label></p>
-    
-    <input type="submit" value="Submit">
-</form>
+<div class="container card">
+    <div class="card-body">
+        <form method="post" action={{url_for("ingredient_create")}}>
+            <p> <label> Name: <input type="text" value="" name="name"></label></p>
+            <p> <label> Cost: <input type="number" value="" name="cost"></label></p>
+            <input type="submit" value="Submit">
+        </form>
 
-    <ul>
-        {% for ingredient in ingredients %}
-            <div>
+        <ul>
+            {% for ingredient in ingredients %}
+            <li>
                 <a href={{url_for("ingredient_detail",iid=ingredient.iid)}}>{{ingredient.name}}</a>
-            </div>
-        {% endfor %}
-    </ul>   
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 
 {% endblock%}
