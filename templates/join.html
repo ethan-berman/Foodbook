@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container card">
+    <div class="card-body">
+        <form id="joinform" action="{{url_for('join')}}" method="post">
+            <h2>Join</h2>
+            <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
+            <p><label><input type="email" name="email">Email </label></p>
+            <p><label><input type="password" name="password1" required> Password </label></p>
+            <p><label><input type="password" name="password2" required> Password again </label></p>
+            <p><button type="submit">Submit</button></p>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

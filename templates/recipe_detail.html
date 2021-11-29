@@ -5,6 +5,7 @@
 <div class="container card">
     <div class="card-body">
         <h1>{{recipe.name}}</h1>
+        <p>By {{author.username}}</p>
         <p>{{recipe.description}}</p>
         <!-- <p>
         {{ingredients}}
@@ -36,6 +37,19 @@
             {% endfor %}
 
         </ol>
+        <ul class="list-group">
+            {% for review in reviews%}
+            <li class="list-group-item">
+                <h5>{{review.author.username}} says:</h5>
+                <p>{{review.body}}</p>
+                
+            </li>
+            {% endfor%}
+        </ul>
+            <form method="post" action={{url_for('review', rid=recipe.rid)}}>
+                <textarea name="body"></textarea>
+                <input type="submit" value="Post">
+            </form>
     </div>
 </div>
 

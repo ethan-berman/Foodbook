@@ -11,7 +11,7 @@ create table user (
     uid int auto_increment,
     username varchar(40) not null,
     email varchar(40) not null,
-    password varchar(40) not null,
+    password char(60) not null,
     restrictions set('vegan', 'vegetarian', 'pescetarian', 'peanut allergy', 'GF', 'DF'),
     primary key (uid)
 )
@@ -50,6 +50,7 @@ create table review (
     revid int auto_increment,
     author int not null,
     recipe int not null,
+    body text not null,
     primary key(revid),
     index(revid),
     foreign key(author) references user(uid)

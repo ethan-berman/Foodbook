@@ -47,7 +47,7 @@
                         </div>
                         <div class="form-group">
                             <input type="button" onclick="handleAddInstruction()" value="+">
-                            <ol id="instructionList">
+                            <ol id="instructionList" class="list-group">
                             </ol>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
         var textArea = $(document.createElement("textarea"))
             .attr("class", "inst col-11");
         var deleteButton = $(document.createElement("input"))
-            .attr("class", " col-1")
+            .attr("class", "text-right col-1")
             .attr("value", "-")
             .attr("type", "button")
             .attr("onclick", "handleRemoveInstruction(" + index + ")");

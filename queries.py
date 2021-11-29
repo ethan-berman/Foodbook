@@ -89,3 +89,29 @@ def getInstructionsByRecipe(conn, recipe):
     curs.execute("select * from instruction where recipe = %s", [recipe])
     instructions = curs.fetchall()
     return instructions
+
+def getAuthor(conn, recipe):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from user, recipe where recipe.author = user.uid and recipe.rid = %s", [recipe])
+    author = curs.fetchone()
+    return author
+def getReviewAuthor(conn, review):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from user, review where review.author = user.uid and review.revid = %s", [review])
+    author = curs.fetchone()
+    return author
+
+def insertReview(conn, author, recipe, body):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("insert into review (author, recipe, body) values (%s, %s, %s)", [author,recipe,body])
+    conn.commit()
+    curs.execute("select last_insert_id() as id from review")
+    id = curs.fetchone()
+    id = id['id']
+    return id
+
+def getReviewsByRecipe(conn, recipe):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from review where recipe = %s", [recipe])
+    reviews = curs.fetchall()
+    return reviews
