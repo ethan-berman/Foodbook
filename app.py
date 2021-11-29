@@ -142,6 +142,7 @@ def logout():
 
 @app.route('/recipe/<rid>')
 def recipe_detail(rid):
+    # Detail view for recipe, includes the OP and reviews and their authors
     conn = dbi.connect()
     recipe = queries.getRecipeById(conn, rid)
     author = queries.getAuthor(conn, rid)
@@ -152,9 +153,7 @@ def recipe_detail(rid):
         poster = queries.getReviewAuthor(conn, item['revid'])
         item['author'] = poster
     for item in ingredients:
-        # print(item)
         ingredient_name = queries.getIngredientDetail(conn, item.get('ingredient'))
-        # print(ingredient_name)
         item['ingredient_name'] = ingredient_name.get("name")
     return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients, instructions=instructions, author=author, reviews=reviews)
 
@@ -167,19 +166,26 @@ def recipe_create():
                 ingredients = queries.getAllIngredients(conn)
                 return render_template("recipe_create.html", ingredients=ingredients)
             else:
-                print(request.json)
+                #Handle new ingredient insert
                 data = request.json
+                #get params
                 title = data.get('title')
                 description = data.get('description')
                 ingredients = data.get('ingredients')
                 instructions = data.get("instructions")
                 uid = session['uid']
-                print(data)
-
-                print(request.form)
-                print(ingredients)
-                
-
+                # reduce to boolean
+                isTitle = len(title) == 0
+                isDescription = len(description) == 0
+                isIngredients = len(ingredients) == 0
+                isInstructions = len(instructions) == 0
+                #validate inputs
+                if (isTitle or isDescription or isIngredients or isInstructions):
+                    flash("Missing data!")
+                    # have to jsonify because this is jquery request, regular redirect wont work
+                    return jsonify({"redirect":url_for("recipe_create")})
+                    # return redirect(url_for("recipe_create"))
+                #Input valid, insert new entry
                 recipe_id = queries.insertRecipe(conn, uid, title, description)
                 for item in ingredients:
                     print(item)
@@ -189,7 +195,8 @@ def recipe_create():
                     id = queries.insertInstruction(conn, recipe_id, i, instructions[i])
                     print(id)
 
-                return redirect(url_for("recipe_detail", rid=recipe_id))
+                # have to jsonify because jquery request
+                return jsonify({"redirect": url_for("recipe_detail", rid=recipe_id)})
         else:
             flash('you are not logged in. Please login or Sign up.')
             return redirect(url_for('index'))
@@ -200,12 +207,14 @@ def recipe_create():
 
 @app.route('/ingredient/')
 def ingredient():
+    # Get first x ingredients and list them
     conn = dbi.connect()
     ingredients = queries.getIngredients(conn, 10)
     return render_template('ingredient_list.html', ingredients=ingredients)
 
 @app.route('/ingredient_create/', methods=['POST'])
 def ingredient_create():
+    #Handles new ingredients
     if ('name' in request.form and 'cost' in request.form):
         print(request.form)
         name = request.form['name']
@@ -217,6 +226,7 @@ def ingredient_create():
 
 @app.route('/ingredient/<iid>')
 def ingredient_detail(iid):
+    # Basic information about an ingredient
     print(iid)
     conn = dbi.connect()
     ingredient = queries.getIngredientDetail(conn, iid)
@@ -225,6 +235,7 @@ def ingredient_detail(iid):
 
 @app.route('/lookup/')
 def ingredient_search():
+    #Does keyword search in response to jQuery request, returns JSON
     conn = dbi.connect()
     name = request.args.get('name')
     print(name)
@@ -234,6 +245,7 @@ def ingredient_search():
 
 @app.route("/review/<rid>", methods=["POST"])
 def review(rid):
+    # Handles creating new review, takes a recipe that the review is about
     conn = dbi.connect()
     try:
         if 'username' in session:

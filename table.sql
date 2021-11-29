@@ -13,6 +13,7 @@ create table user (
     email varchar(40) not null,
     password char(60) not null,
     restrictions set('vegan', 'vegetarian', 'pescetarian', 'peanut allergy', 'GF', 'DF'),
+    unique(username),
     primary key (uid)
 )
 ENGINE = InnoDB;
