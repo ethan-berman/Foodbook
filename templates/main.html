@@ -23,7 +23,8 @@
                         {% for recipe in recipes %}
                         <li class="list-group-item">
                             <a class="text-reset text-decoration-none"
-                                href={{url_for("recipe_detail",rid=recipe.rid)}}>{{recipe.name[0]|upper}}{{recipe.name[1:]}}</a>
+                                href=
+                                "{{url_for('recipe_detail',rid=recipe.rid)}}">{{recipe.name[0]|upper}}{{recipe.name[1:]}}</a>
                         </li>
                         {% endfor%}
                     </ul>
