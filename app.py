@@ -20,12 +20,14 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 def index():
     conn = dbi.connect()
     recipes = queries.getAllRecipes(conn)
-    return render_template('main.html', recipes=recipes)
+    page_title = "Foodbook"
+    return render_template('main.html', recipes=recipes, page_title=page_title)
 
 @app.route('/join/', methods=["GET", "POST"])
 def join():
     if request.method == "GET":
-        return render_template("join.html")
+        page_title = "Foodbook | Sign up"
+        return render_template("join.html",page_title=page_title)
     else:
         try:
             username = request.form['username']
@@ -63,7 +65,8 @@ def join():
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        page_title = "Foodbook | Login"
+        return render_template("login.html", page_title=page_title)
     else:
         try:
             username = request.form['username']
@@ -113,7 +116,7 @@ def user(username):
             recipes = queries.getRecipesByUser(conn, uid)
             session['visits'] = 1+int(session['visits'])
             return render_template('user.html',
-                                   page_title='My App: Welcome {}'.format(username),
+                                   page_title='Foodbook: Welcome {}'.format(username),
                                    name=username,
                                    uid=uid,
                                    visits=session['visits'],
@@ -152,13 +155,14 @@ def recipe_detail(rid):
     ingredients = queries.getRecipeIngredients(conn, rid)
     instructions = queries.getInstructionsByRecipe(conn, rid)
     reviews = queries.getReviewsByRecipe(conn, rid)
+    page_title = "Foodbook | {}".format(recipe.get('name'))
     for item in reviews:
         poster = queries.getReviewAuthor(conn, item['revid'])
         item['author'] = poster
     for item in ingredients:
         ingredient_name = queries.getIngredientDetail(conn, item.get('ingredient'))
         item['ingredient_name'] = ingredient_name.get("name")
-    return render_template("recipe_detail.html",recipe=recipe, ingredients=ingredients, instructions=instructions, author=author, reviews=reviews)
+    return render_template("recipe_detail.html",page_title=page_title, recipe=recipe, ingredients=ingredients, instructions=instructions, author=author, reviews=reviews)
 
 @app.route('/recipe/', methods=["GET", "POST"])
 def recipe_create():
@@ -167,7 +171,8 @@ def recipe_create():
         if 'username' in session:
             if request.method == "GET":
                 ingredients = queries.getAllIngredients(conn)
-                return render_template("recipe_create.html", ingredients=ingredients)
+                page_title = "Foodbook | Create Recipe"
+                return render_template("recipe_create.html", ingredients=ingredients,page_title=page_title)
             else:
                 #Handle new ingredient insert
                 data = request.json
@@ -213,7 +218,8 @@ def ingredient():
     # Get first x ingredients and list them
     conn = dbi.connect()
     ingredients = queries.getIngredients(conn, 10)
-    return render_template('ingredient_list.html', ingredients=ingredients)
+    page_title = "Foodbook | Ingredients"
+    return render_template('ingredient_list.html', ingredients=ingredients,page_title=page_title)
 
 @app.route('/ingredient_create/', methods=['POST'])
 def ingredient_create():
@@ -233,8 +239,9 @@ def ingredient_detail(iid):
     print(iid)
     conn = dbi.connect()
     ingredient = queries.getIngredientDetail(conn, iid)
+    page_title = "Foodbook | {}".format(ingredient.get('name'))
     print(ingredient)
-    return render_template('ingredient_detail.html', ingredient=ingredient)
+    return render_template('ingredient_detail.html', ingredient=ingredient, page_title=page_title)
 
 @app.route('/lookup/')
 def ingredient_search():

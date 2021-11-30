@@ -19,7 +19,10 @@
             <tbody>
                 {% for item in ingredients %}
                 <tr>
-                    <td> <a href={{url_for("ingredient_detail",iid=item.ingredient)}}> {{item.ingredient_name}} </a>
+                    <td> 
+                        <a href="{{url_for('ingredient_detail',iid=item.ingredient)}}"> 
+                            {{item.ingredient_name}} 
+                        </a>
                     </td>
                     <td> {{item.quantity}} </td>
                     <td> {{item.unit}} </td>
@@ -30,7 +33,7 @@
             </tbody>
         </table>
 
-        <ol>
+        <ol class="list-group">
             {% for item in instructions %}
             <li> {{item.content}}</li>
 
@@ -46,9 +49,15 @@
             </li>
             {% endfor%}
         </ul>
-            <form method="post" action={{url_for('review', rid=recipe.rid)}}>
-                <textarea name="body"></textarea>
-                <input type="submit" value="Post">
+            <form method="post" action="{{url_for('review', rid=recipe.rid)}}">
+                <div class="form-group">
+                    <label for="newReview">Leave a review: </label>
+                    <textarea id="newReview" class="form-control" name="body"></textarea>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="submit" value="Post">
+                </div>
+                
             </form>
     </div>
 </div>
