@@ -4,12 +4,28 @@
 <div class="container card">
     <div class="card-body">
         <form id="joinform" action="{{url_for('join')}}" method="post">
-            <h2>Join</h2>
-            <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
-            <p><label><input type="email" name="email">Email </label></p>
-            <p><label><input type="password" name="password1" required> Password </label></p>
-            <p><label><input type="password" name="password2" required> Password again </label></p>
-            <p><button type="submit">Submit</button></p>
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center">Sign up</h2>
+                <div class="form-group">
+                    <label for="username"> Username</label>
+                    <input class="form-control" type="text" name="username" id="username" required pattern="^\w+$">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email </label>
+                    <input class="form-control" type="email" name="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label for="pw">Password </label>
+                    <input class="form-control" type="password" name="password1" id="pw" required>
+                </div>
+                <div class="form-group">
+                    <label for="pw2"> Password again</label>
+                    <input class="form-control" type="password" name="password2" id="pw2" required>
+                </div>
+                <div class="form-group">
+                    <button class="form-control" type="submit">Submit</button>
+                </div>
+            </div>
         </form>
 
     </div>

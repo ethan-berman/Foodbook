@@ -25,7 +25,7 @@
                             <input class="form-control" id="searchText" name="search" type="text">
                         </div>
                         <div class="form-group">
-                            <ul class="forms" id="options">
+                            <ul class="forms list-group" id="options">
 
                             </ul>
                         </div>
@@ -93,16 +93,16 @@
     function createSearchResultItem(index, obj) {
         var listItem = $(document.createElement("li"))
             .attr("id", "IngredientChoice" + index)
-            .attr("class", "row");
+            .attr("class", "row list-group-item");
         var itemLabel = $(document.createElement("span"))
-            .attr("class", "col-6")
+            .attr("class", "ms-auto col")
             .text(obj.name);
         console.log(obj);
         let cmd = "handleAdd(" + obj.iid + ", '" + obj.name + "', '" + obj.unit + "' )";
         var newButton = $(document.createElement("input"))
             .attr("type", "button")
             .attr("onclick", cmd)
-            .attr("class", "col-6")
+            .attr("class", "me-auto col-6")
             .attr("value", "+");
         listItem.append(itemLabel);
         listItem.append(newButton);

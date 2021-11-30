@@ -3,7 +3,27 @@
 {% block main_content %}
 <div class="container card">
     <div class="card-body">
-        {{name}}
+        <h3 class="text-center"> {{name[0]|upper}}{{name[1:]}} </h3>
+
+        {% if recipes %}
+        <ul class="list-group">
+            {% for recipe in recipes %}
+            <li class="list-group-item">
+                <a class="text-reset text-decoration-none" href="{{url_for('recipe_detail', rid=recipe.rid)}}">
+
+                    <h5> {{recipe.name[0] | upper}}{{recipe.name[1:]}}</h5>
+
+                    <p> {{recipe.description}}</p>
+                </a>
+            </li>
+
+            {% endfor %}
+        </ul>
+        {% else %}
+        <span>
+            This user has not posted any recipes!
+        </span>
+        {% endif %}
     </div>
 </div>
 

@@ -104,17 +104,20 @@ def login():
 
 @app.route('/user/<username>')
 def user(username):
+    conn = dbi.connect()
     try:
         # don't trust the URL; it's only there for decoration
         if 'username' in session:
             username = session['username']
             uid = session['uid']
+            recipes = queries.getRecipesByUser(conn, uid)
             session['visits'] = 1+int(session['visits'])
             return render_template('user.html',
                                    page_title='My App: Welcome {}'.format(username),
                                    name=username,
                                    uid=uid,
-                                   visits=session['visits'])
+                                   visits=session['visits'],
+                                   recipes=recipes)
 
         else:
             flash('you are not logged in. Please login or join')
@@ -243,6 +246,15 @@ def ingredient_search():
     print(results)
     return jsonify(results=results)
 
+@app.route('/find_recipe/')
+def recipe_search():
+    conn = dbi.connect()
+    name = request.args.get('name')
+    recipes = queries.searchRecipe(conn, name)
+    for recipe in recipes:
+        recipe['author'] = queries.getAuthor(conn, recipe.get('rid'))
+    return jsonify(results=recipes)
+    
 @app.route("/review/<rid>", methods=["POST"])
 def review(rid):
     # Handles creating new review, takes a recipe that the review is about

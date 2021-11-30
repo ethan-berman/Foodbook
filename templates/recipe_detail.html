@@ -4,8 +4,8 @@
 
 <div class="container card">
     <div class="card-body">
-        <h1>{{recipe.name}}</h1>
-        <p>By {{author.username}}</p>
+        <h1>{{recipe.name[0]|upper}}{{recipe.name[1:]}}</h1>
+        <p>By {{author.username[0]|upper}}{{author.username[1:]}}</p>
         <p>{{recipe.description}}</p>
         <!-- <p>
         {{ingredients}}

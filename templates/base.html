@@ -25,26 +25,33 @@
         <li class="nav-item"><a class="nav-link" href="{{url_for('ingredient')}}">Ingredients</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('recipe_create')}}">Create Recipe</a></li>
       </ul>
+      <span class="navbar-brand mx-auto"> Foodbook </span>
       <ul class="navbar-nav ms-auto my-2 my-lg-0">
         <li class="nav-item"><a class="nav-link" href="{{url_for('login')}}"> Login </a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('join')}}"> Sign up </a></li>
 
         {% if session['logged_in'] %}
+          <li class="nav-item"> <a class="nav-link" href="{{url_for('user', username=session['logged_in'])}}"> {{session['username'][0] | upper}}{{session['username'][1:]}} </a> </li>
           <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"> Logout </a></li>
         {% endif %}
       </ul>
     </nav>
-    <h1 class="text-center">Foodbook</h1>
+
   </div>
   {% endblock %}
 
   {% with messages = get_flashed_messages() %}
   {% if messages %}
-  <div id="messages">
-    {% for msg in messages %}
-    <p>{{msg}}</p>
-    {% endfor %}
+  <div class="container card">
+    <div class="card-body">
+      <div id="messages">
+        {% for msg in messages %}
+        <div class="alert alert-primary">{{msg[0]|upper}}{{msg[1:]}}</div>
+        {% endfor %}
+      </div>
+    </div>
   </div>
+ 
   {% endif %}
   {% endwith %}
 

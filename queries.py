@@ -115,3 +115,16 @@ def getReviewsByRecipe(conn, recipe):
     curs.execute("select * from review where recipe = %s", [recipe])
     reviews = curs.fetchall()
     return reviews
+
+def getRecipesByUser(conn, uid):
+    curs = dbi.dict_cursor(conn)
+    curs.execute("select * from recipe where author = %s", [uid])
+    recipes = curs.fetchall()
+    return recipes
+
+def searchRecipe(conn, keyword):
+    curs = dbi.dict_cursor(conn)
+    param = "%" + keyword + "%"
+    curs.execute("select * from recipe where name like %s ", [param])
+    results = curs.fetchall()
+    return results
