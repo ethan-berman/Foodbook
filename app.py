@@ -84,8 +84,6 @@ def login():
                 flash('login incorrect. Try again or join')
                 return redirect( url_for('index'))
             hashed = row['password']
-            print('database has hashed: {} {}'.format(hashed,type(hashed)))
-            print('form supplied passwd: {} {}'.format(passwd,type(passwd)))
             hashed2 = bcrypt.hashpw(passwd.encode('utf-8'), hashed.encode('utf-8'))
             print('rehash is: {} {}'.format(hashed2, type(hashed2)))
             if hashed2.decode('utf-8') == hashed:
