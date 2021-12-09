@@ -2,30 +2,64 @@
 
 {% block main_content%}
 
-<div class="container">
-    <h1>{{recipe.name}}</h1>
-    <p>{{recipe.description}}</p>
-    <!-- <p>
+<div class="container card">
+    <div class="card-body">
+        <h1>{{recipe.name[0]|upper}}{{recipe.name[1:]}}</h1>
+        <p>By {{author.username[0]|upper}}{{author.username[1:]}}</p>
+        <p>{{recipe.description}}</p>
+        <!-- <p>
         {{ingredients}}
     </p> -->
-    <table>
-        <thead>
-            <th>Ingredient</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-        </thead>
-        <tbody>
-            {% for item in ingredients %}
-            <tr>
-                    <td> <a href={{url_for("ingredient_detail",iid=item.ingredient)}}>  {{item.ingredient_name}} </a> </td> 
+        <table class="table table-striped">
+            <thead>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+            </thead>
+            <tbody>
+                {% for item in ingredients %}
+                <tr>
+                    <td> 
+                        <a href="{{url_for('ingredient_detail',iid=item.ingredient)}}"> 
+                            {{item.ingredient_name}} 
+                        </a>
+                    </td>
                     <td> {{item.quantity}} </td>
                     <td> {{item.unit}} </td>
-                    
-                
-            </tr>
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <ol class="list-group">
+            {% for item in instructions %}
+            <li> {{item.content}}</li>
+
             {% endfor %}
-        </tbody>
-    </table>
+
+        </ol>
+        <ul class="list-group">
+            {% for review in reviews%}
+            <li class="list-group-item">
+                <h5>{{review.author.username}} says:</h5>
+                <p>{{review.body}}</p>
+                
+            </li>
+            {% endfor%}
+        </ul>
+            <form method="post" action="{{url_for('review', rid=recipe.rid)}}">
+                <div class="form-group">
+                    <label for="newReview">Leave a review: </label>
+                    <textarea id="newReview" class="form-control" name="body"></textarea>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="submit" value="Post">
+                </div>
+                
+            </form>
+    </div>
 </div>
 
 {% endblock %}

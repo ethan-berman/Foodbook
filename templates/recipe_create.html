@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="title">Name:</label>
+                    <input id="title" class="form-control" type="text" name="title">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" class=" form-control"
+                        name="description">Describe your recipe here!</textarea>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <h4 class="text-center">Ingredients</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchText">Search:</label>
+                            <input class="form-control" id="searchText" name="search" type="text">
+                        </div>
+                        <div class="form-group">
+                            <ul class="forms list-group" id="options">
+
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <table id="ingredients" class="table">
+                                <thead>
+                                    <th>Ingredient: </th>
+                                    <th>Quantity: </th>
+                                    <th>Units: </th>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <h4 class="text-center">Instructions</h4>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" onclick="handleAddInstruction()" value="+">
+                            <ol id="instructionList" class="list-group">
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" id="submit" type="submit" value="Submit">
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block end_scripts %}
+<script>
+    var counter = 0;
+    var instructionCounter = 0;
+    var ingredients = {};
+    var instructions = [];
+    let choices = ["cup", "pound", "count", "tbsp", "tsp", "kilogram", "gram", "slices"];
+    handleAddInstruction();
+    $("#ingredients").hide();
+
+    function createInstructionItem(index) {
+        var instructionContainer = $(document.createElement("li"))
+            .attr("class", "row")
+            .attr("id", "instruction" + index);
+        var textArea = $(document.createElement("textarea"))
+            .attr("class", "inst col-11");
+        var deleteButton = $(document.createElement("input"))
+            .attr("class", "text-right col-1")
+            .attr("value", "-")
+            .attr("type", "button")
+            .attr("onclick", "handleRemoveInstruction(" + index + ")");
+        instructionContainer.append(textArea);
+        instructionContainer.append(deleteButton);
+        return instructionContainer;
+    };
+
+    function createSearchResultItem(index, obj) {
+        var listItem = $(document.createElement("li"))
+            .attr("id", "IngredientChoice" + index)
+            .attr("class", "row list-group-item");
+        var itemLabel = $(document.createElement("span"))
+            .attr("class", "ms-auto col")
+            .text(obj.name);
+        console.log(obj);
+        let cmd = "handleAdd(" + obj.iid + ", '" + obj.name + "', '" + obj.unit + "' )";
+        var newButton = $(document.createElement("input"))
+            .attr("type", "button")
+            .attr("onclick", cmd)
+            .attr("class", "me-auto col-6")
+            .attr("value", "+");
+        listItem.append(itemLabel);
+        listItem.append(newButton);
+        return listItem;
+    };
+
+    function createIngredientListItem(index, name, unitDefault) {
+        var newIngredient = $(document.createElement("tr"))
+            .attr("id", "ing" + index);
+        var labelContainer = $(document.createElement("td"));
+        var label = $(document.createElement("td"))
+            .attr("value", index)
+            .attr("class", "label col");
+        label.text(name);
+        labelContainer.append(label);
+        var quantityContainer = $(document.createElement("td"))
+            .attr("class", "form-group");
+        var quantity = $(document.createElement("input"))
+            .attr("class", "q form-control")
+            .attr("type", "number");
+        quantityContainer.append(quantity);
+        var unitContainer = $(document.createElement("td"))
+            .attr("class", "form-group");
+        var unit = $(document.createElement("select"))
+            .attr("class", "u form-control");
+        console.log(unitDefault);
+        for (let choice of choices) {
+            let selected = choice === unitDefault;
+            console.log(selected);
+            let c = $(document.createElement("option"))
+                .attr("value", choice)
+                .attr("label", choice)
+                .attr("selected", selected);
+            unit.append(c);
+            
+        }
+        unitContainer.append(unit);
+        var removeButtonContainer = $(document.createElement("td"));
+        var removeButton = $(document.createElement("input"))
+            .attr("type", "button")
+            .attr("value", "-")
+            .attr("class", "form-control")
+            .attr("onclick", "handleRemove(" + index + ")");
+        removeButtonContainer.append(removeButton);
+        newIngredient.append(labelContainer);
+        newIngredient.append(quantityContainer);
+        newIngredient.append(unitContainer);
+        newIngredient.append(removeButtonContainer);
+        return newIngredient;
+    };
+
+    function handleAddInstruction() {
+        let nextInstruction = createInstructionItem(instructionCounter);
+        $("#instructionList").append(nextInstruction);
+        instructionCounter++;
+    };
+
+    function handleRemoveInstruction(index) {
+        console.log("remove");
+        $("#instruction" + index).remove();
+        instructionCounter--;
+    };
+
+    function handleAdd(item, name, unit) {
+        console.log(item);
+        console.log(name);
+        console.log(unit);
+        $("#ingredients").show();
+        if (ingredients[item]) {
+            console.log("repeat");
+            alert("Cannot add duplicate entries of the same ingredient!");
+            return;
+        }
+        ingredients[item] = { name: name, quantity: 0 };
+        var newIngredient = createIngredientListItem(item, name, unit);
+        $("#ingredients").append(newIngredient);
+        counter++;
+
+    };
+
+    function handleRemove(item) {
+        console.log(item);
+        $("#ing" + item).remove();
+        delete ingredients[item];
+        counter--;
+        if (counter === 0) {
+            $("#ingredients").hide();
+        }
+    }
+    $("#addButton").click(function (e) {
+        e.preventDefault();
+        var newTextBoxDiv = $(document.createElement('div'))
+            .attr("id", 'TextBoxDiv' + counter);
+
+        newTextBoxDiv.after().html('<tr> <td> <label>Textbox #' + counter + ' : </label> </td>' +
+            '<td> <select name="ingredient[' + counter + ']"> '
+            + '{% for ingredient in ingredients %} <option value={{ingredient.iid}}> {{ingredient.name}} </option> {% endfor%} </select> <td>' +
+            '<td> Quantity: </td> ' +
+            '<td> <input type="number"> </td>' +
+            '</tr>');
+
+        newTextBoxDiv.appendTo("#ingredients");
+        counter++;
+    });
+
+
+
+    $("#searchText").on('input', $.debounce(1000, function (e) {
+        e.preventDefault();
+        let name = $("#searchText").val();
+        console.log(name);
+        let search_url = "{{url_for('ingredient_search')}}";
+        $.get(search_url, { name: name }).done(function (data) {
+            console.log(data.results);
+            var results = data.results;
+            $("#options > li").each(function (index, elem) {
+                console.log(elem);
+                $(elem).remove();
+            });
+            for (let index in results) {
+                console.log(results[index]);
+                var listItem = createSearchResultItem(index, results[index])
+                $("#options").append(listItem);
+
+            }
+        });
+    }));
+
+    $("#submit").click(function (e) {
+        e.preventDefault();
+        var ingredientList = [];
+        var instructionList = [];
+        let name = $("div").find("#title").val();
+        let description = $("div").find("#description").val();
+        $("#ingredients > tr").each(function (index, elem) {
+            let id = $(elem).find(".label").attr("value");
+            let quantity = $(elem).find(".q").val();
+            let unit = $(elem).find(".u").val();
+            let item = { iid: id, quantity: quantity, unit: unit };
+            ingredientList.push(item);
+        });
+        $("#instructionList > li").each(function(index, elem){
+            let instruction = $(elem).find(".inst").val();
+            instructionList.push(instruction);
+        });
+        let data = {
+            title: name,
+            description: description,
+            ingredients: ingredientList,
+            instructions: instructionList
+        }
+        let post_url = "{{url_for('recipe_create')}}";
+        $.ajax({
+            url: post_url,
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data, textStatus){
+                console.log(data);
+                console.log(textStatus);
+                console.log("test");
+                if(data.redirect){
+                    window.location.href = data.redirect;
+                }
+            }
+        })
+    })
+</script>
+{% endblock %}

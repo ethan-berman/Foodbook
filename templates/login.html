@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="container card">
+    <div class="card-body">
+        <form id="loginform" action="{{url_for('login')}}" method="post">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center">Login</h2>
+                <div class="form-group">
+                    <label for="username">Username: </label>
+                    <input class="form-control" id="username" type="text" name="username" required pattern="^\w+$">
+                </div>
+                <div class=" form-group">
+                    <label for="password">Password: </label>
+                    <input class="form-control" id="password" type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <button class="form-control" type="submit">Submit</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

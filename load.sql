@@ -1,9 +1,9 @@
 use bermane_db;
 
-insert into ingredient(cost, name) 
-values (1.49, "Butter(unsalted)"),
-    (3.49, "Wonder Bread"),
-    (2.29, "American Cheese");
+insert into ingredient(cost, name, unit) 
+values (1.49, "Butter(unsalted)", "pound"),
+    (0.39, "Wonder Bread", "slices"),
+    (2.29, "American Cheese", "pound");
 
 insert into user(username, email, password, restrictions)
 values ("eberman", "bermane@whitman.edu", "lol", "DF");

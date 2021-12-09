@@ -1,17 +1,101 @@
 {% extends "base.html" %}
 
 {% block main_content %}
+<div class="container card">
+    <div class="card-body">
+        <div class=" mx-auto">
+            <h1 class="text-center">Foodbook</h1>
 
-<h1>Foodbook</h1>
-<ul>
-{% for recipe in recipes %}
+            <div class="container card">
+                <div class="card-body" id="searchContainer">
+                    <div class="form-group">
+                        <label for="searchRecipe">Search for a recipe: </label>
+                        <input type="text" name="search" id="searchRecipe" class="form-control">
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <br>
+            <div class="container card">
+                <div class="card-body">
+                    <h5> Recently published recipes: </h5>
+                    <ul class="list-group">
+                        {% for recipe in recipes %}
+                        <li class="list-group-item">
+                            <a class="text-reset text-decoration-none"
+                                href=
+                                "{{url_for('recipe_detail',rid=recipe.rid)}}">{{recipe.name[0]|upper}}{{recipe.name[1:]}}</a>
+                        </li>
+                        {% endfor%}
+                    </ul>
+                </div>
+            </div>
 
-<li>
-    <a href={{url_for("recipe_detail",rid=recipe.rid)}}>{{recipe.name}}</a>
-</li>
 
 
-{% endfor%}
-</ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block end_scripts %}
+<script>
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function createResultItem(index, obj) {
+        let link = "/recipe/" + obj.rid;
+        var listContainer = $(document.createElement("li"))
+            .attr("id", "recipe" + index)
+            .attr("class", "list-group-item");
+        var listAnchor = $(document.createElement("a"))
+            .attr("class", "text-reset text-decoration-none")
+            .attr("href", link);
+        let capitalLabel = capitalizeFirstLetter(obj.name);
+        let authorLabel = capitalizeFirstLetter(obj.author.username)
+        let output = capitalLabel + " - " + authorLabel;
+        listAnchor.text(output);
+        listContainer.append(listAnchor);
+        return listContainer;
+    }
+    $("#searchRecipe").on('input', $.debounce(1000, function (e) {
+        e.preventDefault();
+        let name = $("#searchRecipe").val();
+        $("#resultsContainer").remove();
+        $("#alertContainer").remove();
+        if (name !== "") {
+            let search_url = "{{url_for('recipe_search')}}";
+            $.get(search_url, { name: name }).done(function (data) {
+                var results = data.results;
+                if (results.length) {
+                    var resultsContainer = $(document.createElement("div"))
+                        .attr("class", "form-group")
+                        .attr("id", "resultsContainer");
+                    let header = $(document.createElement("h6"))
+                        .attr("id", "resultsHeader");
+                    header.text("Results:");
+                    var resultsList = $(document.createElement("ul"))
+                        .attr("id", "searchResults")
+                        .attr("class", "list-group");
+                    for (let index in results) {
+                        let item = createResultItem(index, results[index])
+                        resultsList.append(item);
+                    }
+                    resultsContainer.append(header);
+                    resultsContainer.append(resultsList);
+                    $("#searchContainer").append(resultsContainer);
+                } else {
+                    let alertContainer = $(document.createElement("div"))
+                        .attr("class", "alert alert-danger")
+                        .attr("id", "alertContainer");
+                    alertContainer.text("No results found!");
+                    $("#searchContainer").append(alertContainer);
+                }
+
+            });
+        }
+    }));
+</script>
 
 {% endblock %}
